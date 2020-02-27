@@ -53,7 +53,7 @@
 	ArrayList<TitlesTotal> list = new ArrayList<TitlesTotal>();
 	String searchWord = "";
 	String[] searchValue = new String[]{};
-	String sendValue = "";
+	String sendUrl = "";
 	if(request.getParameter("searchWord") != null) {
 		searchWord = request.getParameter("searchWord");
 		searchValue = request.getParameterValues("searchValue");
@@ -84,6 +84,19 @@
 		} else if(searchValue.length==1) {
 			stmt1 = conn.prepareStatement("select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, t.title, t.from_date, t.to_date from employees e inner join titles t on e.emp_no = t.emp_no where " + searchValue[0] + " like '%" + searchWord + "%' order by e.emp_no asc, from_date asc, title asc limit ?,?");
 		} */
+		String sql1 = "select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, t.title, t.from_date, t.to_date from employees e inner join titles t on e.emp_no = t.emp_no where ";
+		String order = "%' order by e.emp_no asc, from_date asc, title asc limit ?,?";
+		for(int i=0; i<searchValue.length; i+=1) {
+			if(i==0) {
+				sql1 = sql1 + searchValue[0] + " like '%" + searchWord;
+				sendUrl = "&searchValue=" + searchValue[0];
+			} else {
+				sql1 = sql1 + "%' or " + searchValue[i] + " like '%" + searchWord;
+				sendUrl = sendUrl + "&searchValue=" + searchValue[i];
+			}
+		}
+		sql1 = sql1 + order;
+		stmt1 = conn.prepareStatement(sql1);
 	}
 	stmt1.setInt(1, beginRow);
 	stmt1.setInt(2, rowPerPage);
@@ -108,7 +121,7 @@
 	if(searchWord.equals("")) {
 		stmt2 = conn.prepareStatement("select count(*) from employees e inner join titles t on e.emp_no = t.emp_no");
 	} else {
-		if(searchValue.length==9) {
+		/* if(searchValue.length==9) {
 			stmt2 = conn.prepareStatement("select count(*) from employees e inner join titles t on e.emp_no = t.emp_no where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' or " + searchValue[5] + " like '%" + searchWord + "%' or " + searchValue[6] + " like '%" + searchWord + "%' or " + searchValue[7] + " like '%" + searchWord + "%' or " + searchValue[8] + " like '%" + searchWord + "%'");
 		} else if(searchValue.length==8) {
 			stmt2 = conn.prepareStatement("select count(*) from employees e inner join titles t on e.emp_no = t.emp_no where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' or " + searchValue[5] + " like '%" + searchWord + "%' or " + searchValue[6] + " like '%" + searchWord + "%' or " + searchValue[7] + " like '%" + searchWord + "%'");
@@ -126,8 +139,17 @@
 			stmt2 = conn.prepareStatement("select count(*) from employees e inner join titles t on e.emp_no = t.emp_no where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%'");
 		} else if(searchValue.length==1) {
 			stmt2 = conn.prepareStatement("select count(*) from employees e inner join titles t on e.emp_no = t.emp_no where " + searchValue[0] + " like '%" + searchWord + "%'");
-			
+		} */
+		String sql2 = "select count(*) from employees e inner join titles t on e.emp_no = t.emp_no where ";
+		for(int i=0; i<searchValue.length; i+=1) {
+			if(i==0) {
+				sql2 = sql2 + searchValue[0] + " like '%" + searchWord;
+			} else {
+				sql2 = sql2 + "%' or " + searchValue[i] + " like '%" + searchWord;
+			}
 		}
+		sql2 = sql2 + "%'";
+		stmt2 = conn.prepareStatement(sql2);
 	}
 	System.out.println(stmt2 + " <--stmt2");
 	ResultSet rs2 = stmt2.executeQuery();
@@ -154,7 +176,7 @@
 			<div>
 				<form method="post" action="<%=request.getContextPath() %>/titles/titlesList.jsp">
 					<div class="row" style="margin-left: 10px;">
-						<span class="col">	
+						<span class="col">
 							<input type="checkbox" class="form-check-input" id="emp_no" value="e.emp_no" name="searchValue">
 							<label class="form-check-label" for="emp_no">emp_no</label>
 						</span>
@@ -246,7 +268,7 @@
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=1%>" aria-label="First">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="First">
+										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="First">
 									<%} %>
 										<i class="fas fa-angle-double-left"></i>
 									</a>
@@ -255,7 +277,7 @@
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=prevPageGroup%>" aria-label="Prev">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Prev">
 									<%} %>
 										<i class="fas fa-angle-left"></i>
 									</a>
@@ -268,7 +290,7 @@
 									<%if(searchWord.equals("")) { %>
 										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=j%>"><%=j %></a></li>
 									<%} else { %>
-										<%-- <li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>"><%=j %></a></li> --%>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %><%=sendUrl %>"><%=j %></a></li>
 									<%} 
 								}
 								if(j==lastPage) {
@@ -280,7 +302,7 @@
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=nextPageGroup%>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-right"></i>
 									</a>
@@ -289,7 +311,7 @@
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=lastPage%>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/titles/titlesList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-double-right"></i>
 									</a>

@@ -39,6 +39,9 @@
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
 	int rowPerPage = 10;	// 한 페이지에 출력할 행 수
+	if(request.getParameter("rowPerPage")!=null) {
+		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));
+	}
 	int beginRow = (currentPage-1)*rowPerPage;	// 출력시작할 행
 	
 	// 2. database
@@ -58,7 +61,7 @@
 	if(searchWord.equals("")) {
 		stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees order by emp_no asc limit ?,?");
 	} else {
-		if(searchValue.length==6) {
+		/* if(searchValue.length==6) {
 			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' or " + searchValue[5] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
 			sendUrl = "&searchValue="+searchValue[0]+"&searchValue="+searchValue[1]+"&searchValue="+searchValue[2]+"&searchValue="+searchValue[3]+"&searchValue="+searchValue[4]+"&searchValue="+searchValue[5];
 		} else if(searchValue.length==5) {
@@ -76,7 +79,20 @@
 		} else if(searchValue.length==1){
 			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
 			sendUrl = "&searchValue="+searchValue[0];
+		} */
+		String sql1 = "select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where ";
+		String order = "%' order by emp_no asc limit ?,?";
+		for(int i=0; i<searchValue.length; i+=1) {
+			if(i==0) {
+				sql1 = sql1 + searchValue[0] + " like '%" + searchWord;
+				sendUrl = "&searchValue=" + searchValue[0];
+			} else {
+				sql1 = sql1 + "%' or " + searchValue[i] + " like '%" + searchWord;
+				sendUrl = sendUrl + "&searchValue=" + searchValue[i];
+			}
 		}
+		sql1 = sql1 + order;
+		stmt1 = conn.prepareStatement(sql1);
 	}
 	stmt1.setInt(1, beginRow);
 	stmt1.setInt(2, rowPerPage);
@@ -99,7 +115,7 @@
 	if(searchWord.equals("")) {
 		stmt2 = conn.prepareStatement("select count(*) from employees");
 	} else {
-		if(searchValue.length==6) {
+		/* if(searchValue.length==6) {
 			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' or " + searchValue[5] + " like '%" + searchWord + "%'");
 		} else if(searchValue.length==5) {
 			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%'");
@@ -111,7 +127,17 @@
 			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%'");
 		} else if(searchValue.length==1){
 			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%'");
+		} */
+		String sql2 = "select count(*) from employees where ";
+		for(int i=0; i<searchValue.length; i+=1) {
+			if(i==0) {
+				sql2 = sql2 + searchValue[0] + " like '%" + searchWord;
+			} else {
+				sql2 = sql2 + "%' or " + searchValue[i] + " like '%" + searchWord;
+			}
 		}
+		sql2 = sql2 + "%'";
+		stmt2 = conn.prepareStatement(sql2);
 	}
 	ResultSet rs2 = stmt2.executeQuery();
 	if(rs2.next()) {
@@ -172,6 +198,16 @@
 					</div>
 				</form>
 			</div>
+			<div style="text-align: right; margin-top: 15px;">
+				<form method="get" action="<%=request.getContextPath() %>/employees/employeesList.jsp">
+					<select name="rowPerPage">
+						<option value="10">10개씩 보기</option>
+						<option value="20">20개씩 보기</option>
+						<option value="30">30개씩 보기</option>
+					</select>
+					<button class="btn btn-sm btn-secondary" type="submit">확인</button>
+				</form>
+			</div>
 			<div class="container" style="text-align: center; margin-top: 30px;">
 				<table class="table table-hover">
 					<thead class="thead-dark">
@@ -211,18 +247,18 @@
 							if(currentPage>5){%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=1%>" aria-label="First">
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %>" aria-label="First">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=1%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="First"> 
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="First"> 
 									<%} %>
 										<i class="fas fa-angle-double-left"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=prevPageGroup%>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=prevPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Prev">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=prevPageGroup%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=prevPageGroup%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Prev">
 									<%} %>
 										<i class="fas fa-angle-left"></i>
 									</a>
@@ -233,9 +269,9 @@
 									<li class="page-item active"><span class="page-link"><%=j %><span class="sr-only">(current)</span></span></li>
 								<%} else { 
 									if(searchWord.equals("")) {%>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=j%>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=j%>&rowPerPage=<%=rowPerPage %>"><%=j %></a></li>
 									<%} else { %>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=j%><%=sendUrl %>&searchWord=<%=searchWord %>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=j%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>"><%=j %></a></li>
 									<%} %>
 								<%}
 								if(j==lastPage) {
@@ -245,18 +281,18 @@
 							if(currentPage<=lastPageGroup-4) {%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=nextPageGroup%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=nextPageGroup%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-right"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=lastPage%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=lastPage%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=lastPage%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next"> 
+										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=lastPage%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next"> 
 									<%} %>
 										<i class="fas fa-angle-double-right"></i>
 									</a>

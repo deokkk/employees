@@ -54,20 +54,33 @@
 	PreparedStatement stmt1 = null;
 	
 	String searchWord = "";
-	String searchValue = "";
+	String[] searchValue = new String[]{};
+	String sendUrl = "";
 	if(request.getParameter("searchWord") != null) {
 		searchWord = request.getParameter("searchWord");
-		searchValue = request.getParameter("searchValue");
+		searchValue = request.getParameterValues("searchValue");
 	}
 	System.out.println(searchWord + " <--searchWord");
-	System.out.println(searchValue + " <--searchValue");
 	
 	// 검색폼에서 데이터가 넘어오면
 	if(searchWord.equals("")) {
 		// select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, s.salary, s.from_date, s.to_date from employees e inner join salaries s on e.emp_no = s.emp_no order by e.emp_no asc limit ?,?
 		stmt1 = conn.prepareStatement("select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, s.salary, s.from_date, s.to_date from employees e inner join salaries s on e.emp_no = s.emp_no order by e.emp_no asc, s.from_date asc limit ?,?");
 	} else {
-		stmt1 = conn.prepareStatement("select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, s.salary, s.from_date, s.to_date from employees e inner join salaries s on e.emp_no = s.emp_no where " + searchValue + " like '%" + searchWord + "%' order by e.emp_no asc, s.from_date asc limit ?,?");
+		//stmt1 = conn.prepareStatement("select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, s.salary, s.from_date, s.to_date from employees e inner join salaries s on e.emp_no = s.emp_no where " + searchValue + " like '%" + searchWord + "%' order by e.emp_no asc, s.from_date asc limit ?,?");
+		String sql1 = "select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, s.salary, s.from_date, s.to_date from employees e inner join salaries s on e.emp_no = s.emp_no where ";
+		String order = "%' order by e.emp_no asc, s.from_date asc limit ?,?";
+		for(int i=0; i<searchValue.length; i+=1) {
+			if(i==0) {
+				sql1 = sql1 + searchValue[0] + " like '%" + searchWord;
+				sendUrl = "&searchValue=" + searchValue[0];
+			} else {
+				sql1 = sql1 + "%' or " + searchValue[i] + " like '%" + searchWord;
+				sendUrl = sendUrl + "&searchValue=" + searchValue[i];
+			}
+		}
+		sql1 = sql1 + order;
+		stmt1 = conn.prepareStatement(sql1);
 	}
 	stmt1.setInt(1, beginRow);
 	stmt1.setInt(2, rowPerPage);
@@ -94,7 +107,17 @@
 		// select e.emp_no, e.birth_date, e.first_name, e.last_name, e.gender, e.hire_date, s.salary, s.from_date, s.to_date from employees e inner join salaries s on e.emp_no = s.emp_no order by e.emp_no asc limit ?,?
 		stmt2 = conn.prepareStatement("select count(*) from employees e inner join salaries s on e.emp_no = s.emp_no");
 	} else {
-		stmt2 = conn.prepareStatement("select count(*) from employees e inner join salaries s on e.emp_no = s.emp_no where " + searchValue + " like '%" + searchWord + "%'");
+		//stmt2 = conn.prepareStatement("select count(*) from employees e inner join salaries s on e.emp_no = s.emp_no where " + searchValue + " like '%" + searchWord + "%'");
+		String sql2 = "select count(*) from employees e inner join salaries s on e.emp_no = s.emp_no where ";
+		for(int i=0; i<searchValue.length; i+=1) {
+			if(i==0) {
+				sql2 = sql2 + searchValue[0] + " like '%" + searchWord;
+			} else {
+				sql2 = sql2 + "%' or " + searchValue[i] + " like '%" + searchWord;
+			}
+		}
+		sql2 = sql2 + "%'";
+		stmt2 = conn.prepareStatement(sql2);
 	}
 
 	ResultSet rs2 = stmt2.executeQuery();
@@ -119,21 +142,52 @@
 		<div class="col-xl-8">
 			<h1>Salaries List</h1>
 			<!-- 검색폼 -->
-			<div style="text-align: right;">
+			<div>
 				<form method="post" action="<%=request.getContextPath() %>/salaries/salariesList.jsp">
-					<select name="searchValue" style="border-radius: 0.25em; height: 30px;">
-						<option value="e.emp_no">emp_no</option>
-						<option value="e.birth_date">birth_date</option>
-						<option value="e.first_name">first_name</option>
-						<option value="e.last_name">last_name</option>
-						<option value="e.gender">gender</option>
-						<option value="e.hire_date">hire_date</option>
-						<option value="s.salary">salary</option>
-						<option value="s.from_date">from_date</option>
-						<option value="s.to_date">to_date</option>
-					</select>
-					<input type="text" name="searchWord" style="border-radius: 0.25em;">
-					<button type="submit" class="btn btn-sm btn-secondary">Search</button>
+					<div class="row" style="margin-left: 10px;">
+						<span class="col">
+							<input type="checkbox" class="form-check-input" id="emp_no" value="e.emp_no" name="searchValue">
+							<label class="form-check-label" for="emp_no">emp_no</label>
+						</span>
+						<span class="col">	
+							<input type="checkbox" class="form-check-input" id="birth_date" value="e.birth_date" name="searchValue">
+							<label class="form-check-label" for="birth_date">birth_date</label>
+						</span>
+						<span class="col">
+							<input type="checkbox" class="form-check-input" id="first_name" value="e.first_name" name="searchValue">
+							<label class="form-check-label" for="first_name">first_name</label>
+						</span>
+						<span class="col">	
+							<input type="checkbox" class="form-check-input" id="last_name" value="e.last_name" name="searchValue">
+							<label class="form-check-label" for="last_name">last_name</label>
+						</span>
+						<span class="col">
+							<input type="checkbox" class="form-check-input" id="gender" value="e.gender" name="searchValue">
+							<label class="form-check-label" for="gender">gender</label>
+						</span>
+						<span class="col">	
+							<input type="checkbox" class="form-check-input" id="hire_date" value="e.hire_date" name="searchValue">
+							<label class="form-check-label" for="hire_date">hire_date</label>
+						</span>
+						<span class="col">	
+							<input type="checkbox" class="form-check-input" id="salary" value="s.salary" name="searchValue">
+							<label class="form-check-label" for="title">salary</label>
+						</span>
+						<span class="col">
+							<input type="checkbox" class="form-check-input" id="from_date" value="s.from_date" name="searchValue">
+							<label class="form-check-label" for="from_date">from_date</label>
+						</span>
+						<span class="col">	
+							<input type="checkbox" class="form-check-input" id="to_date" value="s.to_date" name="searchValue">
+							<label class="form-check-label" for="to_date">to_date</label>
+						</span>
+					</div>
+					<div class="form-group" style="margin-top: 10px;">
+						<input type="text" class="form-control" id="searchWord" name="searchWord">
+					</div>
+					<div style="text-align: right;">
+						<button class="btn btn-sm btn-secondary" type="submit">Search</button>
+					</div>
 				</form>
 			</div>
 			<div class="container" style="text-align: center; margin-top: 30px;">
@@ -183,7 +237,7 @@
 										<%if(searchWord.equals("")) { %>
 											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>" aria-label="First">
 										<%} else {%>
-											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="First">
+											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="First">
 										<%} %>
 											<i class="fas fa-angle-double-left"></i>
 										</a>
@@ -192,7 +246,7 @@
 										<%if(searchWord.equals("")) { %>
 											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>" aria-label="Prev">
 										<%} else {%>
-											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="Prev">
+											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Prev">
 										<%} %>
 											<i class="fas fa-angle-left"></i>
 										</a>
@@ -205,7 +259,7 @@
 									<%if(searchWord.equals("")) { %>
 										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>"><%=j %></a></li>
 									<%} else { %>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %><%=sendUrl %>"><%=j %></a></li>
 									<%}	
 								}
 								if(j==lastPage) {
@@ -217,7 +271,7 @@
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-right"></i>
 									</a>
@@ -226,7 +280,7 @@
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %>&searchValue=<%=searchValue %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
 									<%} %>	
 										<i class="fas fa-angle-double-right"></i>
 									</a>

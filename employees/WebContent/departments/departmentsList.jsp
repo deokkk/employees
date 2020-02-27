@@ -41,6 +41,9 @@
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
 	}
 	int rowPerPage = 5;
+	if(request.getParameter("rowPerPage") != null) {
+		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));	
+	}
 	int beginRow = (currentPage-1)*rowPerPage;
 	
 	// 2.0 database
@@ -144,6 +147,15 @@
 					</div>
 				</form>
 			</div>
+			<div style="text-align: right; margin-top: 15px;">
+				<form method="post" action="<%=request.getContextPath() %>/departments/departmentsList.jsp">
+					<select name="rowPerPage">
+						<option value="5">5개씩 보기</option>
+						<option value="10">10개씩 보기</option>
+					</select>
+					<button class="btn btn-sm btn-secondary" type="submit">확인</button>
+				</form>
+			</div>
 			<!-- Departments List -->
 			<div class="container" style="text-align: center; margin-top: 30px;">
 				<table class="table table-hover">
@@ -176,18 +188,21 @@
 							if(currentPage>5){%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>" aria-label="First">
-									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="First">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %>" aria-label="First">
+									<%} else { 
+										//if(request.getParameter("rowPerPage")!=null) {%>
+											<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="First">
+										<%-- <%} else { %>
+											<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="First"> --%>
 									<%} %>
 										<i class="fas fa-angle-double-left"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=prevPageGroup%>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=prevPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Prev">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="Prev">
 									<%} %>
 										<i class="fas fa-angle-left"></i>
 									</a>
@@ -198,9 +213,9 @@
 									<li class="page-item active"><span class="page-link"><%=j %><span class="sr-only">(current)</span></span></li>
 								<%} else { %>
 									<%if(searchWord.equals("")) { %>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=j%>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=j%>&rowPerPage=<%=rowPerPage %>"><%=j %></a></li>
 									<%} else {%>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %><%=sendUrl %>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>"><%=j %></a></li>
 									<%} %>
 								<%}
 								if(j==lastPage) {
@@ -210,18 +225,18 @@
 							if(currentPage<=lastPageGroup-4) {%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=nextPageGroup%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-right"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=lastPage%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=lastPage%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-double-right"></i>
 									</a>
