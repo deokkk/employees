@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.sql.*" %>
-<%@ page import="gd.emp.QnA" %>
+<%@ page import="gd.emp.*" %>
 <%@ page import="java.util.*" %>
 <!DOCTYPE html>
 <html>
@@ -60,9 +60,9 @@
 	if(request.getParameter("searchWord")!=null) {
 		searchWord = request.getParameter("searchWord");
 		searchValue = request.getParameter("searchValue");
-		if(searchValue.equals("titleUser")) {
+		if(searchValue.equals("titleContent")) {
 			searchValue1 = "qna_title";
-			searchValue2 = "qna_user";
+			searchValue2 = "qna_Content";
 		}
 	}
 	
@@ -138,7 +138,8 @@
 					<select name="searchValue" style="border-radius: 0.25em; height: 30px;">
 						<option value="qna_title">제목</option>
 						<option value="qna_user">작성자</option>
-						<option value="titleUser">제목 + 작성자</option>
+						<option value="qna_content">내용</option>
+						<option value="titleContent">제목 + 내용</option>
 					</select>
 					<input type="text" name="searchWord" style="border-radius: 0.25em;">
 					<button type="submit" class="btn btn-sm btn-secondary">Search</button>

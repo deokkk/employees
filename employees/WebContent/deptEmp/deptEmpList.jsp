@@ -230,10 +230,6 @@
 					</tbody>
 				</table>
 			</div>
-			<div style="text-align: right;">
-				<!-- 추가 버튼 -->
-				<a href="<%=request.getContextPath() %>/deptEmp/insertDeptEmpForm.jsp" class="btn btn-sm btn-secondary" style="margin: 15px; ">부서 입력</a>
-			</div>
 			<nav aria-label="Page navigation example">
 				<ul class="pagination" style="justify-content: center;">
 					<% for(int i=0; i<lastPage; i+=pageGroup) {

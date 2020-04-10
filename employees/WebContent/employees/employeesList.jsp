@@ -61,25 +61,6 @@
 	if(searchWord.equals("")) {
 		stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees order by emp_no asc limit ?,?");
 	} else {
-		/* if(searchValue.length==6) {
-			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' or " + searchValue[5] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
-			sendUrl = "&searchValue="+searchValue[0]+"&searchValue="+searchValue[1]+"&searchValue="+searchValue[2]+"&searchValue="+searchValue[3]+"&searchValue="+searchValue[4]+"&searchValue="+searchValue[5];
-		} else if(searchValue.length==5) {
-			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
-			sendUrl = "&searchValue="+searchValue[0]+"&searchValue="+searchValue[1]+"&searchValue="+searchValue[2]+"&searchValue="+searchValue[3]+"&searchValue="+searchValue[4];
-		} else if(searchValue.length==4) {
-			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
-			sendUrl = "&searchValue="+searchValue[0]+"&searchValue="+searchValue[1]+"&searchValue="+searchValue[2]+"&searchValue="+searchValue[3];
-		} else if(searchValue.length==3) {
-			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
-			sendUrl = "&searchValue="+searchValue[0]+"&searchValue="+searchValue[1]+"&searchValue="+searchValue[2];
-		} else if(searchValue.length==2) {
-			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
-			sendUrl = "&searchValue="+searchValue[0]+"&searchValue="+searchValue[1];
-		} else if(searchValue.length==1){
-			stmt1 = conn.prepareStatement("select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where " + searchValue[0] + " like '%" + searchWord + "%' order by emp_no asc limit ?,?");
-			sendUrl = "&searchValue="+searchValue[0];
-		} */
 		String sql1 = "select emp_no, birth_date, first_name, last_name, gender, hire_date from employees where ";
 		String order = "%' order by emp_no asc limit ?,?";
 		for(int i=0; i<searchValue.length; i+=1) {
@@ -115,19 +96,6 @@
 	if(searchWord.equals("")) {
 		stmt2 = conn.prepareStatement("select count(*) from employees");
 	} else {
-		/* if(searchValue.length==6) {
-			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%' or " + searchValue[5] + " like '%" + searchWord + "%'");
-		} else if(searchValue.length==5) {
-			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%' or " + searchValue[4] + " like '%" + searchWord + "%'");
-		} else if(searchValue.length==4) {
-			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%' or " + searchValue[3] + " like '%" + searchWord + "%'");
-		} else if(searchValue.length==3) {
-			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%' or " + searchValue[2] + " like '%" + searchWord + "%'");
-		} else if(searchValue.length==2) {
-			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%' or " + searchValue[1] + " like '%" + searchWord + "%'");
-		} else if(searchValue.length==1){
-			stmt2 = conn.prepareStatement("select count(*) from employees where " + searchValue[0] + " like '%" + searchWord + "%'");
-		} */
 		String sql2 = "select count(*) from employees where ";
 		for(int i=0; i<searchValue.length; i+=1) {
 			if(i==0) {
@@ -163,7 +131,7 @@
 		<div class="col-xl-8">
 			<h1>Employees List</h1>
 			<div>
-				<form method="post" action="<%=request.getContextPath() %>/employees/employeesList.jsp">
+				<form method="get" action="<%=request.getContextPath() %>/employees/employeesList.jsp">
 					<div class="row" style="margin-left: 10px;">
 						<span class="col">
 							<input type="checkbox" class="form-check-input" id="emp_no" value="emp_no" name="searchValue">
@@ -190,7 +158,8 @@
 							<label class="form-check-label" for="hire_date">hire_date</label>
 						</span>
 					</div>
-					<div class="form-group" style="margin-top: 10px;">
+					<div class="form-group" style="margin-top: 10px;"> 
+					<!-- input박스 안에 검색된값 넣어주기? 같이넘기기 -->
 						<input type="text" class="form-control" id="searchWord" name="searchWord">
 					</div>
 					<div style="text-align: right;">
@@ -249,6 +218,7 @@
 									<%if(searchWord.equals("")) {%>
 										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %>" aria-label="First">
 									<%} else { %>
+										
 										<a class="page-link" href="<%=request.getContextPath()%>/employees/employeesList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="First"> 
 									<%} %>
 										<i class="fas fa-angle-double-left"></i>

@@ -1,6 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.ArrayList" %>
-<%@ page import="gd.emp.Departments" %>
+<%@ page import="gd.emp.*" %>
 <%@ page import="java.sql.*" %>
 <!DOCTYPE html>
 <html>
