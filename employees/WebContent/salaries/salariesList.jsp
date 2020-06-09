@@ -31,7 +31,6 @@
 <%
 	// page
 	int currentPage = 1;
-	int rowPerPage = 10;
 	int lastPage = 0;
 	int totalRow = 0;
 	int pageGroup = 5;
@@ -41,6 +40,10 @@
 	request.setCharacterEncoding("utf-8");
 	if(request.getParameter("currentPage")!=null) {
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
+	}
+	int rowPerPage = 10;	// 한 페이지에 출력할 행 수
+	if(request.getParameter("rowPerPage")!=null) {
+		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));
 	}
 	//System.out.println(currentPage);
 	int beginRow = (currentPage-1)*rowPerPage;
@@ -190,6 +193,16 @@
 					</div>
 				</form>
 			</div>
+			<div style="text-align: right; margin-top: 15px;">
+				<form method="get" action="<%=request.getContextPath() %>/salaries/salariesList.jsp">
+					<select name="rowPerPage">
+						<option value="10">10개씩 보기</option>
+						<option value="20">20개씩 보기</option>
+						<option value="30">30개씩 보기</option>
+					</select>
+					<button class="btn btn-sm btn-secondary" type="submit">확인</button>
+				</form>
+			</div>
 			<div class="container" style="text-align: center; margin-top: 30px;">
 				<table class="table table-hover">
 					<thead class="thead-dark">
@@ -231,18 +244,18 @@
 							if(currentPage>5){ %>
 									<li class="page-item">
 										<%if(searchWord.equals("")) { %>
-											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>" aria-label="First">
+											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %>" aria-label="First">
 										<%} else {%>
-											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="First">
+											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %>&rowPerPage=<%=rowPerPage %><%=sendUrl %>" aria-label="First">
 										<%} %>
 											<i class="fas fa-angle-double-left"></i>
 										</a>
 									</li>
 									<li class="page-item">
 										<%if(searchWord.equals("")) { %>
-											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>" aria-label="Prev">
+											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Prev">
 										<%} else {%>
-											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Prev">
+											<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=prevPageGroup%>&searchWord=<%=searchWord %>&rowPerPage=<%=rowPerPage %><%=sendUrl %>" aria-label="Prev">
 										<%} %>
 											<i class="fas fa-angle-left"></i>
 										</a>
@@ -253,9 +266,9 @@
 									<li class="page-item active"><span class="page-link"><%=j %><span class="sr-only">(current)</span></span></li>
 								<%} else { %>
 									<%if(searchWord.equals("")) { %>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>&rowPerPage=<%=rowPerPage %>"><%=j %></a></li>
 									<%} else { %>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %><%=sendUrl %>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=j%>&searchWord=<%=searchWord %>&rowPerPage=<%=rowPerPage %><%=sendUrl %>"><%=j %></a></li>
 									<%}	
 								}
 								if(j==lastPage) {
@@ -265,18 +278,18 @@
 							if(currentPage<=lastPageGroup-4){%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=nextPageGroup%>&searchWord=<%=searchWord %>&rowPerPage=<%=rowPerPage %><%=sendUrl %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-right"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %><%=sendUrl %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/salaries/salariesList.jsp?currentPage=<%=lastPage%>&searchWord=<%=searchWord %>&rowPerPage=<%=rowPerPage %><%=sendUrl %>" aria-label="Next">
 									<%} %>	
 										<i class="fas fa-angle-double-right"></i>
 									</a>

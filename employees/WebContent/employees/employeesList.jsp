@@ -117,7 +117,7 @@
 	}
 	//System.out.println(lastPage);
 	int lastPageGroup = lastPage-(lastPage%pageGroup);
-	System.out.println(lastPageGroup);
+	System.out.println(lastPageGroup + " <--lastPageGroup");
 	// page갯수 5개씩 보여주고
 	// 6개 이상이면 <버튼 이전 5개 페이지나오게, >버튼 다음 5개페이지, >>버튼 마지막페이지
 	
@@ -158,8 +158,8 @@
 							<label class="form-check-label" for="hire_date">hire_date</label>
 						</span>
 					</div>
+					<!-- 검색폼 -->
 					<div class="form-group" style="margin-top: 10px;"> 
-					<!-- input박스 안에 검색된값 넣어주기? 같이넘기기 -->
 						<input type="text" class="form-control" id="searchWord" name="searchWord">
 					</div>
 					<div style="text-align: right;">
@@ -205,7 +205,7 @@
 			</div>
 			<div style="text-align: right;">
 				<!-- 추가 버튼 -->
-				<a href="<%=request.getContextPath() %>/employees/insertEmployeesForm.jsp" class="btn btn-sm btn-secondary" style="margin: 15px; ">부서 입력</a>
+				<a href="<%=request.getContextPath() %>/employees/insertEmployeesForm.jsp" class="btn btn-sm btn-secondary" style="margin: 15px; ">사원 추가</a>
 			</div>
 			<nav aria-label="Page navigation example">
 				<ul class="pagination" style="justify-content: center;">

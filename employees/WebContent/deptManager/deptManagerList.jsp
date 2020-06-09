@@ -32,7 +32,6 @@
 	// page
 	int currentPage = 1;
 	int lastPage = 0;
-	int rowPerPage = 10;
 	int pageGroup = 5;
 	int prevPageGroup = 0;
 	int nextPageGroup = 0;
@@ -40,6 +39,10 @@
 	request.setCharacterEncoding("utf-8");
 	if(request.getParameter("currentPage")!=null) {
 		currentPage = Integer.parseInt(request.getParameter("currentPage"));
+	}
+	int rowPerPage = 5;
+	if(request.getParameter("rowPerPage") != null) {
+		rowPerPage = Integer.parseInt(request.getParameter("rowPerPage"));	
 	}
 	int beginRow = (currentPage-1)*rowPerPage;
 	// database
@@ -100,7 +103,7 @@
 	int totalRow = 0;
 	PreparedStatement stmt2 = null;
 	if(searchWord.equals("")) {
-		stmt2 = conn.prepareStatement("select count(*) from employees e inner join departments d inner join dept_manager dm on e.emp_no = dm.emp_no and d.dept_no = dm.dept_no");
+		stmt2 = conn.prepareStatement("select count(*) from dept_manager dm inner join employees e inner join departments d on e.emp_no = dm.emp_no and d.dept_no = dm.dept_no");
 	} else {
 		//stmt2 = conn.prepareStatement("select count(*) from employees e inner join departments d inner join dept_manager dm on e.emp_no = dm.emp_no and d.dept_no = dm.dept_no where " + searchValue + " like '%" + searchWord + "%'");
 		//"%'"
@@ -120,12 +123,14 @@
 	if(rs2.next()) {
 		totalRow = rs2.getInt("count(*)");
 	}
+	System.out.println(totalRow + " <--totalRow");
 	lastPage = totalRow/rowPerPage;
 	if(lastPage%rowPerPage!=0) {
 		lastPage+=1;
 	}
 	System.out.println(lastPage + " <--lastPage");
 	lastPageGroup = lastPage-(lastPage%pageGroup);
+	System.out.println(lastPageGroup + " <--lastPageGroup");
 %>
 <div>
 	<jsp:include page="/inc/mainmenu.jsp"></jsp:include>
@@ -187,6 +192,15 @@
 					</div>
 				</form>
 			</div>
+			<div style="text-align: right; margin-top: 15px;">
+				<form method="post" action="<%=request.getContextPath() %>/deptManager/deptManagerList.jsp">
+					<select name="rowPerPage">
+						<option value="5">5개씩 보기</option>
+						<option value="10">10개씩 보기</option>
+					</select>
+					<button class="btn btn-sm btn-secondary" type="submit">확인</button>
+				</form>
+			</div>
 			<div class="container" style="text-align: center; margin-top: 30px;">
 				<table class="table table-hover">
 					<thead class="thead-dark">
@@ -230,18 +244,18 @@
 							if(currentPage>5){%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=1%>" aria-label="First">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %>" aria-label="First">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=1%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="First">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=1%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="First">
 									<%} %>
 										<i class="fas fa-angle-double-left"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=prevPageGroup%>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=prevPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Prev">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=prevPageGroup%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Prev">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=prevPageGroup%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Prev">
 									<%} %>
 										<i class="fas fa-angle-left"></i>
 									</a>
@@ -252,30 +266,32 @@
 									<li class="page-item active"><span class="page-link"><%=j %><span class="sr-only">(current)</span></span></li>
 								<%} else { %>
 									<%if(searchWord.equals("")) {%>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=j%>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=j%>&rowPerPage=<%=rowPerPage %>"><%=j %></a></li>
 									<%} else { %>
-										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=j%><%=sendUrl %>&searchWord=<%=searchWord %>"><%=j %></a></li>
+										<li class="page-item"><a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=j%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>"><%=j %></a></li>
 									<%} %>
 								<%}
 								if(j==lastPage) {
 									break;
 								}
 							}
+							System.out.println(currentPage + " <--currentPage");
+							System.out.println(lastPageGroup-4 + " <--lastPageGroup-4");
 							if(currentPage<=lastPageGroup-4) {%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=nextPageGroup%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=nextPageGroup%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-right"></i>
 									</a>
 								</li>
 								<li class="page-item">
 									<%if(searchWord.equals("")) {%>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=lastPage%>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=lastPage%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
 									<%} else { %>
-										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=lastPage%><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next">
+										<a class="page-link" href="<%=request.getContextPath()%>/deptManager/deptManagerList.jsp?currentPage=<%=lastPage%>&rowPerPage=<%=rowPerPage %><%=sendUrl %>&searchWord=<%=searchWord %>" aria-label="Next">
 									<%} %>
 										<i class="fas fa-angle-double-right"></i>
 									</a>

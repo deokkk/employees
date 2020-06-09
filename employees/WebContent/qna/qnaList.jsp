@@ -268,7 +268,8 @@
 			<input type="text" name="searchWord">
 			<button type="submit">검색</button>
 		</form> --%>
-	<div class="col-xl-2"></div>
+		<div class="col-xl-2"></div>
+	</div>
 </div>
 </body>
 </html>

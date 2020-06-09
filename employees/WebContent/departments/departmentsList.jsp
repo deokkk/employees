@@ -192,8 +192,6 @@
 									<%} else { 
 										//if(request.getParameter("rowPerPage")!=null) {%>
 											<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="First">
-										<%-- <%} else { %>
-											<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=1%>&searchWord=<%=searchWord %><%=sendUrl %>&rowPerPage=<%=rowPerPage %>" aria-label="First"> --%>
 									<%} %>
 										<i class="fas fa-angle-double-left"></i>
 									</a>
@@ -222,7 +220,7 @@
 									break;
 								}
 							}
-							if(currentPage<=lastPageGroup-4) {%>
+							if(currentPage<lastPageGroup-4) {%>
 								<li class="page-item">
 									<%if(searchWord.equals("")) { %>
 										<a class="page-link" href="<%=request.getContextPath()%>/departments/departmentsList.jsp?currentPage=<%=nextPageGroup%>&rowPerPage=<%=rowPerPage %>" aria-label="Next">
